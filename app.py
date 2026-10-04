@@ -255,18 +255,96 @@ def from_url(u):
 
 
 # ---------- location, shops, prices ----------
-def locate(lat, lon, place):
-    if lat is None:
-        r = requests.get("https://nominatim.openstreetmap.org/search", headers=UA, timeout=15,
-                         params={"q": place, "format": "json", "limit": 1, "addressdetails": 1}).json()
-        if not r:
-            raise HTTPException(400, "Couldn't find that place")
-        lat, lon, a = float(r[0]["lat"]), float(r[0]["lon"]), r[0]["address"]
-    else:
-        a = requests.get("https://nominatim.openstreetmap.org/reverse", headers=UA, timeout=15,
-                         params={"lat": lat, "lon": lon, "format": "json", "zoom": 10}).json().get("address", {})
-    return lat, lon, a.get("country", "the local country"), a.get("country_code", "us")
+# ---------- location (replace your old `def locate(...)` with everything in this block) ----------
+# Nominatim (OpenStreetMap's geocoder) often blocks shared cloud IPs such as Render's, and then answers with an
+# HTML/plain-text page. The old code called .json() on that page and crashed with "Expecting value".
+# This version identifies itself properly, never trusts the reply to be JSON, caches results, and falls back to
+# two other free geocoders (Photon and Open-Meteo) before giving up with a clear message.
+GEO_UA = {"User-Agent": f"home-craving/0.2 (contact: {os.getenv('GEO_CONTACT', 'set GEO_CONTACT in your environment')})"}
+_geo_cache = {}
 
+
+def _geo_json(url, params):
+    r = requests.get(url, params=params, headers=GEO_UA, timeout=12)
+    try:
+        return r.json()
+    except ValueError:
+        raise RuntimeError(f"HTTP {r.status_code}, not JSON: {r.text[:80]!r}")
+
+
+def _forward(place):
+    def nominatim():
+        r = _geo_json("https://nominatim.openstreetmap.org/search",
+                      {"q": place, "format": "json", "limit": 1, "addressdetails": 1})
+        if not r:
+            return None
+        a = r[0].get("address", {})
+        return float(r[0]["lat"]), float(r[0]["lon"]), a.get("country"), a.get("country_code")
+
+    def photon():
+        r = _geo_json("https://photon.komoot.io/api/", {"q": place, "limit": 1})
+        f = (r.get("features") or [None])[0]
+        if not f:
+            return None
+        lon, lat = f["geometry"]["coordinates"]
+        p = f.get("properties", {})
+        return lat, lon, p.get("country"), p.get("countrycode")
+
+    def open_meteo():
+        r = _geo_json("https://geocoding-api.open-meteo.com/v1/search", {"name": place, "count": 1})
+        f = (r.get("results") or [None])[0]
+        if not f:
+            return None
+        return f["latitude"], f["longitude"], f.get("country"), f.get("country_code")
+
+    return [("nominatim", nominatim), ("photon", photon), ("open-meteo", open_meteo)]
+
+
+def _reverse(lat, lon):
+    """Country name and code for a GPS point. Never blocks the request: unknown is fine."""
+    try:
+        a = _geo_json("https://nominatim.openstreetmap.org/reverse",
+                      {"lat": lat, "lon": lon, "format": "json", "zoom": 10}).get("address", {})
+        if a.get("country"):
+            return a["country"], (a.get("country_code") or "").lower() or None
+    except Exception as e:
+        print(f"[geo] reverse via nominatim failed: {e}", flush=True)
+    try:
+        r = _geo_json("https://photon.komoot.io/reverse", {"lat": lat, "lon": lon})
+        p = ((r.get("features") or [{}])[0]).get("properties", {})
+        if p.get("country"):
+            return p["country"], (p.get("countrycode") or "").lower() or None
+    except Exception as e:
+        print(f"[geo] reverse via photon failed: {e}", flush=True)
+    return "the local country", None
+
+
+def locate(lat, lon, place):
+    if lat is not None:
+        country, cc = _reverse(lat, lon)
+        return lat, lon, country, cc
+    key = place.strip().lower()
+    if key in _geo_cache:
+        return _geo_cache[key]
+    no_match, failures = False, []
+    for name, fn in _forward(place):
+        try:
+            res = fn()
+        except Exception as e:
+            failures.append(name)
+            print(f"[geo] {name} failed: {e}", flush=True)
+            continue
+        if res:
+            la, lo, country, cc = res
+            out = (float(la), float(lo), country or "the local country", (cc or "").lower() or None)
+            _geo_cache[key] = out
+            print(f"[geo] '{place}' found via {name}", flush=True)
+            return out
+        no_match = True
+    if no_match:
+        raise HTTPException(400, "Couldn't find that place. Try a nearby city name, or tap Use my location.")
+    raise HTTPException(502, "The place lookup services are not responding right now "
+                             f"({', '.join(failures)}). Try again in a minute, or tap Use my location.")
 
 SHOP = '["shop"~"^(supermarket|convenience)$"]'
 KINDS = {
