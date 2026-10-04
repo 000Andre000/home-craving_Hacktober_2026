@@ -145,7 +145,7 @@ function draw(){
   <p class="muted" style="font-size:12px">Swaps are suggestions from an AI model. Check labels for allergens, and taste as you go.</p></aside></div>
   ${shopsHtml}${adapted}`;
   stepDraw(steps);window._steps=steps;slDraw()}
-function slDraw(){const e=$('sl');if(e&&serpLeft!=null)e.textContent='Price lookups left this month: '+serpLeft}
+<!--function slDraw(){const e=$('sl');if(e&&serpLeft!=null)e.textContent='Price lookups left this month: '+serpLeft}-->
 function swapCard(i,n){
   const s=i.subs[0],c=s.score>=65?'':s.score>=40?'m':'l',av=i.reason==='avoid';
   return `<div class="sw ${av?'av':''}"><strong>${av?'Allergy guard found a swap':'Swap found'}</strong>${esc(i.name)} &rarr; <b>${esc(s.name)}</b>
