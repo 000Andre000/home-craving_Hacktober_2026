@@ -78,11 +78,11 @@ details.sec summary{cursor:pointer;font-size:19px;margin-bottom:10px}.two{column
 <form class="sf" onsubmit="event.preventDefault();find()"><span style="color:var(--orange)">&#9906;</span>
 <input id="q" placeholder="Search a dish, e.g. Kerala beef fry, vada pav..." aria-label="Search a dish"><button class="go" id="gof">Find a recipe</button></form>
 <div class="quick"><span>Try:</span><button class="q" onclick="tryq('Kerala beef fry')">Kerala beef fry</button><button class="q" onclick="tryq('Vada pav')">Vada pav</button><button class="q" onclick="tryq('Chicken biryani')">Chicken biryani</button>
-<button class="q" onclick="mode(2)">I have my own recipe</button><button class="v" id="vb" hidden>Speak your craving</button></div>
+<button class="q" onclick="mode(2)">I have my own recipe</button></div>
 <div class="row"><input id="home" placeholder="Home cuisine (optional, e.g. Kerala)"><input id="place" placeholder="Where you live now (city / area)"><button class="go" style="background:var(--teal)" id="lb">Use my location</button></div>
 <div class="row"><label for="av">Keep out of every recipe</label><div class="tags" id="tags"></div><input id="av" placeholder="Add a food to avoid, press Enter"></div>
-<div class="own" id="own" hidden><textarea id="text" rows="4" placeholder="Paste your family recipe..."></textarea><input id="url" placeholder="...or a recipe link">
-<label>...or a photo of the recipe <input id="image" type="file" accept="image/*"></label><label>...or a voice recording <input id="audio" type="file" accept="audio/*"></label>
+<div class="own" id="own" hidden><textarea id="text" rows="4" placeholder="Paste your family recipe..."></textarea>
+<!--<label>...or a photo of the recipe <input id="image" type="file" accept="image/*"></label><label>...or a voice recording <input id="audio" type="file" accept="audio/*"></label>-->
 <button class="go" id="gob" style="justify-self:start">Adapt my recipe</button></div>
 </section>
 <div id="msg"></div>
