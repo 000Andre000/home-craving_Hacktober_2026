@@ -144,7 +144,7 @@ function draw(){
   <aside class="cook" id="cook"><h3>How to make it</h3><div class="step" id="step"></div>${rc.notes?`<p class="muted" style="font-size:13px">${esc(rc.notes)}</p>`:''}
   <p class="muted" style="font-size:12px">Swaps are suggestions from an AI model. Check labels for allergens, and taste as you go.</p></aside></div>
   ${shopsHtml}${adapted}`;
-  stepDraw(steps);window._steps=steps;slDraw()}
+  stepDraw(steps);window._steps=steps;}
 <!--function slDraw(){const e=$('sl');if(e&&serpLeft!=null)e.textContent='Price lookups left this month: '+serpLeft}-->
 function swapCard(i,n){
   const s=i.subs[0],c=s.score>=65?'':s.score>=40?'m':'l',av=i.reason==='avoid';
@@ -153,13 +153,13 @@ function swapCard(i,n){
   <div class="rate" id="r${n}"><small>Did it work when you cooked it?</small><br><button onclick="rate(${n},3)">Great</button><button onclick="rate(${n},2)">Okay</button><button onclick="rate(${n},1)">Poor</button></div></div>`}
 function shopCard(i){
   const s=i.subs[0],sh=s.shops||[];
-  return `<div class="sc"><small class="cnt">${esc(i.name)} &rarr;</small><b>${esc(s.name)}</b>${sh.length?sh.map(x=>`<div class="shop"><span>${esc(x.name)}</span><span>${x.km} km &middot; <a target="_blank" rel="noopener" href="${esc(x.nav)}">Navigate</a></span></div>`).join(''):'<span class="muted">No matching shop found within 5 km on OpenStreetMap.</span>'}${s.price?`<small class="muted">Online reference price: ${esc(s.price.price)} (${esc(s.price.seller)})</small>`:''}</div>`}
+  return `<div class="sc"><small class="cnt">${esc(i.name)} &rarr;</small><b>${esc(s.name)}</b>${sh.length?sh.map(x=>`<div class="shop"><span>${esc(x.name)}</span><span>${x.km} km &middot; <a target="_blank" rel="noopener" href="${esc(x.nav)}">Navigate</a></span></div>`).join(''):'<span class="muted">No matching shop found within 5 km.</span>'}${s.price?`<small class="muted">Online reference price: ${esc(s.price.price)} (${esc(s.price.seller)})</small>`:''}</div>`}
 function stepDraw(steps){
   const t=steps||window._steps||[];if(!t.length){$('step').innerHTML='<p>No steps found.</p>';return}
   $('step').innerHTML=`<div class="dots">${t.map((_,j)=>`<i class="${j<=si?'on':''}"></i>`).join('')}</div><span class="n">${String(si+1).padStart(2,'0')}</span> <span class="cnt">${si+1} / ${t.length}</span><p>${esc(t[si])}</p>
   <div class="sa"><button onclick="go(-1)">Back</button><button class="p" onclick="go(1)">Next step</button><button class="ls" onclick="readStep()">&#9654; Listen</button></div>`}
 function go(k){const n=(window._steps||[]).length;si=Math.min(n-1,Math.max(0,si+k));stepDraw();readStep(true)}
-function loadStatus(){fetch('/api/status').then(r=>r.json()).then(s=>{serpLeft=s.serp_left;slDraw()}).catch(()=>{})}
+function loadStatus(){fetch('/api/status').then(r=>r.json()).then(s=>{serpLeft=s.serp_left;}).catch(()=>{})}
 loadStatus();
 function stopVoice(){if(player){player.pause();player=null}if(window.speechSynthesis)speechSynthesis.cancel()}
 async function readStep(quiet=false){
@@ -181,180 +181,3 @@ function savedDraw(){const a=ls.get('hc_saved',[]);
 function openSaved(i){cur=ls.get('hc_saved',[])[i].d;si=0;view(1);draw()}
 function delSaved(i){const a=ls.get('hc_saved',[]);a.splice(i,1);ls.set('hc_saved',a);savedDraw()}
 </script></body></html>
-
-<!--<!doctype html>-->
-<!--<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">-->
-<!--<title>homecravings</title>-->
-<!--<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>-->
-<!--<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">-->
-<!--<style>-->
-<!--:root{&#45;&#45;ink:#24211e;&#45;&#45;muted:#807a72;&#45;&#45;line:#e6e0d8;&#45;&#45;paper:#faf8f3;&#45;&#45;orange:#c96828;&#45;&#45;teal:#1d756c;&#45;&#45;cream:#f1eadf}-->
-<!--*{box-sizing:border-box}body{margin:0;background:var(&#45;&#45;paper);color:var(&#45;&#45;ink);font:15px/1.55 'DM Sans',system-ui,sans-serif}-->
-<!--button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}:focus-visible{outline:2px solid var(&#45;&#45;teal);outline-offset:3px}[hidden]{display:none!important}-->
-<!--.topbar{height:76px;border-bottom:1px solid var(&#45;&#45;line);display:flex;align-items:center;justify-content:space-between;padding:0 40px;background:#fbfaf7}-->
-<!--.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:-.5px}.brand b{color:var(&#45;&#45;orange)}.mark{background:var(&#45;&#45;orange);color:#fff;width:31px;height:31px;display:grid;place-items:center;border-radius:50%}-->
-<!--nav{display:flex;align-items:center;gap:28px}.nl{color:var(&#45;&#45;muted);font-size:13px;padding:27px 2px}.nl.on{color:var(&#45;&#45;ink);border-bottom:2px solid var(&#45;&#45;orange)}-->
-<!--.prof{display:flex;align-items:center;gap:8px;border-left:1px solid var(&#45;&#45;line);padding-left:28px;font-size:13px}.dot{width:7px;height:7px;background:#5caa80;border-radius:50%}-->
-<!--.ws{max-width:1440px;margin:0 auto;padding:44px 40px 90px}-->
-<!--.welcome{display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap;margin-bottom:28px}-->
-<!--.eyebrow{font:500 11px 'DM Mono',monospace;letter-spacing:1.2px;color:var(&#45;&#45;orange);margin:0 0 12px}-->
-<!--h1{font:600 clamp(32px,3.6vw,52px) 'Playfair Display',Georgia,serif;line-height:1.08;letter-spacing:-1.2px;margin:0}h1 em{color:var(&#45;&#45;orange)}-->
-<!--.lede{color:var(&#45;&#45;muted);max-width:480px;margin:12px 0 0}.date{text-align:right;color:var(&#45;&#45;muted);font:11px 'DM Mono',monospace;letter-spacing:1px;line-height:2}.date strong{display:block;color:var(&#45;&#45;ink);font:italic 18px 'Playfair Display',serif;letter-spacing:0}-->
-<!--.panel{background:#eee7dc;padding:10px 12px 14px;border:1px solid #e3dbcf;margin-bottom:34px}-->
-<!--.sf{height:58px;background:#fff;display:flex;align-items:center;padding:0 8px 0 19px;gap:10px}.sf input{border:0;outline:0;flex:1;font:inherit;font-size:15px;background:transparent;min-width:0}-->
-<!--.go{background:var(&#45;&#45;orange);color:#fff;padding:13px 18px;font-size:13px;font-weight:600;white-space:nowrap}.go:hover{background:#aa511c}.go:disabled{opacity:.6}-->
-<!--.modes{display:flex;gap:6px;padding:0 4px 9px}.mode{padding:7px 14px;font-size:13px;color:var(&#45;&#45;muted)}.mode.on{color:var(&#45;&#45;ink);border-bottom:2px solid var(&#45;&#45;orange)}-->
-<!--.quick{display:flex;align-items:center;gap:10px;padding:12px 10px 0;color:var(&#45;&#45;muted);font-size:12px;flex-wrap:wrap}.quick .q{color:var(&#45;&#45;ink);text-decoration:underline;text-underline-offset:3px}.quick .v{margin-left:auto;color:var(&#45;&#45;teal)}-->
-<!--.row{display:flex;gap:8px;padding:10px 10px 0;flex-wrap:wrap;align-items:center}-->
-<!--.row input,.own input,.own textarea{flex:1;min-width:180px;border:1px solid #e3dbcf;background:#fff;padding:9px 11px;font:inherit;font-size:13px}-->
-<!--.row label{font-size:12px;color:var(&#45;&#45;muted)}-->
-<!--.tags{display:flex;flex-wrap:wrap;gap:6px}.tags span{background:#fff;border:1px solid #e3dbcf;padding:3px 10px;font-size:12px}.tags button{margin-left:6px;color:var(&#45;&#45;muted)}-->
-<!--.own{padding:10px 10px 0;display:grid;gap:8px}.own label{font-size:12px;color:var(&#45;&#45;muted)}-->
-<!--.notice{background:#fff4e7;border:1px solid #f0cda7;color:#99541f;padding:12px 16px;font-size:13px;margin:-14px 0 24px}-->
-<!--.sh{display:flex;justify-content:space-between;align-items:start;gap:1rem;margin-bottom:18px}.sh h2{font:600 clamp(24px,2.4vw,32px) 'Playfair Display',serif;margin:0}-->
-<!--.pill{font:11px 'DM Mono',monospace;background:#e6f1e9;color:var(&#45;&#45;teal);padding:7px 9px}-->
-<!--.hero{min-height:150px;background:linear-gradient(135deg,#c96828,#7a3b14);display:flex;align-items:end}-->
-<!--.hero div{padding:24px 30px;color:#fff;display:flex;justify-content:space-between;align-items:end;gap:1rem;width:100%;background:linear-gradient(0deg,rgba(22,17,10,.5),transparent)}-->
-<!--.hero span{font:italic 19px 'Playfair Display',serif;max-width:640px}.hero .go{background:#fff;color:var(&#45;&#45;ink)}-->
-<!--.stats{display:flex;gap:28px;padding:14px 0;border-bottom:1px solid var(&#45;&#45;line);color:var(&#45;&#45;muted);font-size:13px;flex-wrap:wrap}.stats b{color:var(&#45;&#45;ink)}-->
-<!--.cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:48px;margin-top:26px;align-items:start}-->
-<!--.cook{position:sticky;top:16px}-->
-<!--h3{font:600 18px 'Playfair Display',serif;margin:0 0 12px}.muted,.cnt{color:var(&#45;&#45;muted)}.cnt{font:11px 'DM Mono',monospace}-->
-<!--.ing{list-style:none;padding:0;margin:0}.ing li{display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(&#45;&#45;line)}.ing li span:nth-child(2){flex:1}.ing small{color:var(&#45;&#45;muted)}-->
-<!--.ing li.swli{display:block;padding:4px 0 14px}-->
-<!--.ck{color:var(&#45;&#45;teal);font-weight:700}.fl{color:#fff;background:var(&#45;&#45;orange);width:17px;height:17px;border-radius:50%;display:inline-grid;place-items:center;font-size:11px;font-weight:700;flex:none}-->
-<!--.sw{border:1px solid #cfe3dd;background:#f1f8f5;padding:12px 14px;font-size:13px}.sw.av{background:#fff4e7;border-color:#f0cda7}.sw strong{display:block;margin-bottom:2px}-->
-<!--.cta{margin:0 0 18px;border-color:#f0cda7;background:#fff4e7}-->
-<!--.bar{height:5px;background:#dcd6cb;margin:6px 0}.bar i{display:block;height:100%;background:var(&#45;&#45;teal)}.bar.m i{background:#d6a032}.bar.l i{background:var(&#45;&#45;orange)}-->
-<!--.rate button{border:1px solid var(&#45;&#45;line);background:#fff;padding:2px 9px;margin-right:5px;font-size:12px}-->
-<!--.step{background:var(&#45;&#45;cream);padding:22px 24px}.step .n{font:600 36px 'Playfair Display',serif;color:var(&#45;&#45;orange)}.step p{margin:6px 0 18px;font-size:17px}-->
-<!--.dots{display:flex;gap:5px;margin:0 0 16px}.dots i{flex:1;height:3px;background:#d9d0c1}.dots i.on{background:var(&#45;&#45;orange)}-->
-<!--.sa{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.sa button{font-size:13px;padding:7px 14px;border:1px solid var(&#45;&#45;ink)}.sa .p{background:var(&#45;&#45;ink);color:#fff}.sa .ls{margin-left:auto;background:var(&#45;&#45;teal);border-color:var(&#45;&#45;teal);color:#fff}-->
-<!--.sec{margin-top:40px}.sh2{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:6px}-->
-<!--.shops{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}-->
-<!--.sc{background:#fff;border:1px solid var(&#45;&#45;line);padding:16px;display:grid;gap:6px;align-content:start;font-size:13px}.sc>b{font-size:15px}-->
-<!--.shop{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(&#45;&#45;line);padding-top:6px}.shop a{color:var(&#45;&#45;teal);text-decoration:underline;white-space:nowrap}-->
-<!--details.sec summary{cursor:pointer;font:600 18px 'Playfair Display',serif;margin-bottom:10px}.two{columns:2;column-gap:48px}.two li{break-inside:avoid}-->
-<!--.empty{min-height:300px;background:var(&#45;&#45;cream);display:grid;place-items:center;text-align:center;color:var(&#45;&#45;muted);padding:2rem}.empty h2{font:600 24px 'Playfair Display',serif;color:var(&#45;&#45;ink);margin:0 0 6px}-->
-<!--.spin{width:34px;height:34px;border:3px solid #e3dbcf;border-top-color:var(&#45;&#45;orange);border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 14px}@keyframes sp{to{transform:rotate(360deg)}}-->
-<!--.save{border:1px solid var(&#45;&#45;orange);color:var(&#45;&#45;orange);padding:8px 14px;font-size:13px;font-weight:600}-->
-<!--.card{border:1px solid var(&#45;&#45;line);background:#fff;padding:16px 20px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}-->
-<!--@media(max-width:960px){.cols{grid-template-columns:1fr;gap:30px}.cook{position:static}.ws{padding:30px 18px 70px}.topbar{padding:0 18px}nav{gap:14px}.prof{display:none}.two{columns:1}}-->
-<!--@media(prefers-reduced-motion:reduce){.spin{animation:none}}-->
-<!--@media print{.topbar,.panel,.sa,.rate,.hero .go,.cta{display:none}.cook{position:static}}-->
-<!--</style></head><body>-->
-<!--<header class="topbar"><div class="brand"><span class="mark"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 10a4 4 0 0 1 0-8 4.5 4.5 0 0 1 4 2.4A4.5 4.5 0 0 1 14 2a4.5 4.5 0 0 1 4 6.8A4 4 0 1 1 18 16H6a4 4 0 0 1 0-8Z"/><path d="M6 16v5h12v-5"/><path d="M6 21h12"/></svg></span><span>home<b>cravings</b></span></div>-->
-<!--<nav><button class="nl on" id="n1" onclick="view(1)">My kitchen</button><button class="nl" id="n2" onclick="view(2)">Saved recipes</button>-->
-<!--<button class="prof" onclick="$('av').focus()">Safe profile <span class="dot"></span></button></nav></header>-->
-<!--<main class="ws">-->
-<!--<section class="welcome"><div><p class="eyebrow">YOUR EVERYDAY RECIPE COMPASS</p><h1>What are we <em>craving</em> today?</h1>-->
-<!--<p class="lede">Name a dish from home. We write the recipe, swap what you can't find nearby, and show where to buy it.</p></div>-->
-<!--<div class="date"><span id="dt"></span><strong>Make something good.</strong></div></section>-->
-<!--<section class="panel">-->
-<!--<div class="modes"><button class="mode on" id="m1" onclick="mode(1)">Find a dish</button><button class="mode" id="m2" onclick="mode(2)">Adapt my own recipe</button></div>-->
-<!--<form class="sf" onsubmit="event.preventDefault();find()"><span style="color:var(&#45;&#45;orange)">&#9906;</span>-->
-<!--<input id="q" placeholder="Search a dish, e.g. Kerala beef fry, vada pav..." aria-label="Search a dish"><button class="go" id="gof">Find a recipe</button></form>-->
-<!--<div class="quick"><span>Try:</span><button class="q" onclick="tryq('Kerala beef fry')">Kerala beef fry</button><button class="q" onclick="tryq('Vada pav')">Vada pav</button><button class="q" onclick="tryq('Chicken biryani')">Chicken biryani</button>-->
-<!--<button class="q" onclick="mode(2)">I have my own recipe</button><button class="v" id="vb" hidden>Speak your craving</button></div>-->
-<!--<div class="row"><input id="home" placeholder="Home cuisine (optional, e.g. Kerala)"><input id="place" placeholder="Where you live now (city / area)"><button class="go" style="background:var(&#45;&#45;teal)" id="lb">Use my location</button></div>-->
-<!--<div class="row"><label for="av">Keep out of every recipe</label><div class="tags" id="tags"></div><input id="av" placeholder="Add a food to avoid, press Enter"></div>-->
-<!--<div class="own" id="own" hidden><textarea id="text" rows="4" placeholder="Paste your family recipe..."></textarea><input id="url" placeholder="...or a recipe link">-->
-<!--<label>...or a photo of the recipe <input id="image" type="file" accept="image/*"></label><label>...or a voice recording <input id="audio" type="file" accept="audio/*"></label>-->
-<!--<button class="go" id="gob" style="justify-self:start">Adapt my recipe</button></div>-->
-<!--</section>-->
-<!--<div id="msg"></div>-->
-<!--<div id="v1"><section id="main"><div class="empty"><div><h2>Your next plate will appear here</h2>Search a dish above to get a recipe with swaps for what you can't find nearby.</div></div></section></div>-->
-<!--<div id="v2" hidden><div class="sh"><div><p class="eyebrow">SAVED ON THIS DEVICE</p><h2>Saved recipes</h2></div></div><div id="saved"></div></div>-->
-<!--</main>-->
-<!--<script>-->
-<!--const $=id=>document.getElementById(id);-->
-<!--const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));-->
-<!--let pos=null,cur=null,si=0,avoid=[],swaps=[],player=null,serpLeft=null;const clips={};-->
-<!--const ls={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};-->
-<!--$('dt').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}).toUpperCase();-->
-<!--avoid=ls.get('hc_avoid',[]);tagsDraw();-->
-<!--function tagsDraw(){$('tags').innerHTML=avoid.map((a,i)=>`<span>${esc(a)}<button onclick="rmAvoid(${i})" aria-label="Remove ${esc(a)}">&times;</button></span>`).join('')}-->
-<!--function rmAvoid(i){avoid.splice(i,1);ls.set('hc_avoid',avoid);tagsDraw()}-->
-<!--$('av').onkeydown=e=>{if(e.key==='Enter'&&e.target.value.trim()){avoid.push(e.target.value.trim());ls.set('hc_avoid',avoid);e.target.value='';tagsDraw()}};-->
-<!--$('lb').onclick=()=>navigator.geolocation.getCurrentPosition(p=>{pos=p.coords;$('lb').textContent='Location set';$('place').placeholder='Using your GPS location'},()=>note('Location was blocked. Type your city instead.'));-->
-<!--function note(t){$('msg').innerHTML=t?`<div class="notice">${esc(t)}</div>`:''}-->
-<!--function view(n){$('v1').hidden=n!==1;$('v2').hidden=n!==2;$('n1').classList.toggle('on',n===1);$('n2').classList.toggle('on',n===2);if(n===2)savedDraw()}-->
-<!--function mode(n){$('own').hidden=n!==2;document.querySelector('.sf').hidden=n!==1;document.querySelector('.quick').hidden=n!==1;$('m1').classList.toggle('on',n===1);$('m2').classList.toggle('on',n===2)}-->
-<!--function adaptNow(){-->
-<!--  if(!pos&&!$('place').value.trim()){$('place').focus();return note('Add where you live (or tap Use my location) so I can find nearby shops.')}-->
-<!--  const keep=cur.dish,f=new FormData();-->
-<!--  f.append('text',cur.text);f.append('home',$('home').value);f.append('place',$('place').value);f.append('avoid',avoid.join(', '));-->
-<!--  if(pos){f.append('lat',pos.latitude);f.append('lon',pos.longitude)}-->
-<!--  run(fetch('/api/adapt',{method:'POST',body:f}),keep)}-->
-<!--function tryq(d){$('q').value=d;find()}-->
-<!--const SR=window.SpeechRecognition||window.webkitSpeechRecognition;-->
-<!--if(SR){$('vb').hidden=false;$('vb').onclick=()=>{const r=new SR();r.onresult=e=>{$('q').value=e.results[0][0].transcript;find()};r.onerror=()=>note('Voice search is not available here. Type the dish instead.');r.start()}}-->
-<!--async function run(p,keep){-->
-<!--  note('');$('gof').disabled=$('gob').disabled=true;-->
-<!--  $('main').innerHTML='<div class="empty"><div><div class="spin"></div><h2>Cooking something up...</h2>Writing the recipe, scoring swaps and checking nearby shops. This can take a minute.</div></div>';-->
-<!--  try{const r=await p;if(!r.ok)throw new Error((await r.json()).detail||r.status);cur=await r.json();if(keep&&!cur.dish)cur.dish=keep;si=0;draw();loadStatus();$('main').scrollIntoView({behavior:'smooth',block:'start'})}-->
-<!--  catch(e){$('main').innerHTML='';note('Something went wrong: '+e.message)}-->
-<!--  $('gof').disabled=$('gob').disabled=false}-->
-<!--function find(){-->
-<!--  const dish=$('q').value.trim();if(!dish)return note('Name a dish to start.');-->
-<!--  const b={dish,home:$('home').value,place:$('place').value,avoid,servings:4};if(pos){b.lat=pos.latitude;b.lon=pos.longitude}-->
-<!--  run(fetch('/api/recipe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}))}-->
-<!--$('gob').onclick=()=>{-->
-<!--  if(!pos&&!$('place').value.trim()){$('place').focus();return note('Add where you live (or tap Use my location) so I can find nearby shops.')}-->
-<!--  if(!$('text').value.trim()&&!$('url').value.trim()&&!$('image').files[0]&&!$('audio').files[0])return note('Paste a recipe, add a link, or upload a photo or recording.');-->
-<!--  const f=new FormData();for(const k of['home','place','text','url'])f.append(k,$(k).value);f.append('avoid',avoid.join(', '));-->
-<!--  if($('image').files[0])f.append('image',$('image').files[0]);if($('audio').files[0])f.append('audio',$('audio').files[0]);-->
-<!--  if(pos){f.append('lat',pos.latitude);f.append('lon',pos.longitude)}-->
-<!--  run(fetch('/api/adapt',{method:'POST',body:f}))};-->
-<!--function draw(){-->
-<!--  const d=cur,dish=d.dish||{},rc=d.recipe||{},steps=(rc.steps&&rc.steps.length?rc.steps:dish.steps)||[];-->
-<!--  swaps=d.ingredients.filter(i=>i.subs.length);let k=0;-->
-<!--  const title=rc.title||dish.title||'Your recipe';-->
-<!--  const ing=d.ingredients.map(i=>`<li>${i.hard?'<span class="fl">!</span>':'<span class="ck">&#10003;</span>'}<span>${esc(i.name)}</span><small>${esc(i.qty||'')}</small></li>`+(i.subs.length?`<li class="swli">${swapCard(i,k++)}</li>`:'')).join('');-->
-<!--  const adapted=(rc.ingredients||[]).length&&swaps.length?`<details class="sec" open><summary>Adapted ingredient list</summary><ul class="ing two">${rc.ingredients.map(x=>'<li><span class="ck">&#10003;</span><span>'+esc(x)+'</span></li>').join('')}</ul></details>`:'';-->
-<!--  const shopsHtml=swaps.length?`<section class="sec"><div class="sh2"><h3>Where to buy your swaps</h3><small class="cnt" id="sl"></small></div><div class="shops">${swaps.map(shopCard).join('')}</div></section>`:(d.generated?'':'<p class="muted">Everything here looks easy to find.</p>');-->
-<!--  $('main').innerHTML=`<div class="sh"><div><p class="eyebrow">YOUR NEXT PLATE</p><h2>${esc(title)}</h2></div>-->
-<!--  <div style="display:grid;gap:8px;justify-items:end"><span class="pill">${d.demo?'Sample data':d.generated?'Gemma recipe':'Adapted for you'}</span><button class="save" onclick="save()">Save recipe</button></div></div>-->
-<!--  <div class="hero"><div><span>${esc(dish.story||rc.notes||'Adapted for the shops near you.')}</span><button class="go" onclick="$('cook').scrollIntoView({behavior:'smooth'})">Start cooking</button></div></div>-->
-<!--  <div class="stats">${dish.prep_min?`<span><b>${dish.prep_min} min</b> prep</span>`:''}${dish.cook_min?`<span><b>${dish.cook_min} min</b> cook</span>`:''}${dish.servings?`<span><b>${dish.servings}</b> servings</span>`:''}${d.generated?'':'<span><b>'+swaps.length+'</b> swaps found</span>'}</div>-->
-<!--  <div class="cols"><section><h3>Ingredients</h3>${d.generated?'<div class="sw cta"><strong>Cooking this away from home?</strong>Find substitutes for anything you cannot get nearby, with shops and navigation.<br><button class="go" style="margin-top:8px" onclick="adaptNow()">Find local substitutes</button></div>':''}<ul class="ing">${ing}</ul></section>-->
-<!--  <aside class="cook" id="cook"><h3>How to make it</h3><div class="step" id="step"></div>${rc.notes?`<p class="muted" style="font-size:13px">${esc(rc.notes)}</p>`:''}-->
-<!--  <p class="muted" style="font-size:12px">Swaps are suggestions from an AI model. Check labels for allergens, and taste as you go.</p></aside></div>-->
-<!--  ${shopsHtml}${adapted}`;-->
-<!--  stepDraw(steps);window._steps=steps;slDraw()}-->
-<!--function slDraw(){const e=$('sl');if(e&&serpLeft!=null)e.textContent='Price lookups left this month: '+serpLeft}-->
-<!--function swapCard(i,n){-->
-<!--  const s=i.subs[0],c=s.score>=65?'':s.score>=40?'m':'l',av=i.reason==='avoid';-->
-<!--  return `<div class="sw ${av?'av':''}"><strong>${av?'Allergy guard found a swap':'Swap found'}</strong>${esc(i.name)} &rarr; <b>${esc(s.name)}</b>-->
-<!--  <div class="bar ${c}"><i style="width:${s.score}%"></i></div><small>${s.score}/100 (${esc(s.scored_by)}). ${esc(s.tip)}</small>-->
-<!--  <div class="rate" id="r${n}"><small>Did it work when you cooked it?</small><br><button onclick="rate(${n},3)">Great</button><button onclick="rate(${n},2)">Okay</button><button onclick="rate(${n},1)">Poor</button></div></div>`}-->
-<!--function shopCard(i){-->
-<!--  const s=i.subs[0],sh=s.shops||[];-->
-<!--  return `<div class="sc"><small class="cnt">${esc(i.name)} &rarr;</small><b>${esc(s.name)}</b>${sh.length?sh.map(x=>`<div class="shop"><span>${esc(x.name)}</span><span>${x.km} km &middot; <a target="_blank" rel="noopener" href="${esc(x.nav)}">Navigate</a></span></div>`).join(''):'<span class="muted">No matching shop found within 5 km on OpenStreetMap.</span>'}${s.price?`<small class="muted">Online reference price: ${esc(s.price.price)} (${esc(s.price.seller)})</small>`:''}</div>`}-->
-<!--function stepDraw(steps){-->
-<!--  const t=steps||window._steps||[];if(!t.length){$('step').innerHTML='<p>No steps found.</p>';return}-->
-<!--  $('step').innerHTML=`<div class="dots">${t.map((_,j)=>`<i class="${j<=si?'on':''}"></i>`).join('')}</div><span class="n">${String(si+1).padStart(2,'0')}</span> <span class="cnt">${si+1} / ${t.length}</span><p>${esc(t[si])}</p>-->
-<!--  <div class="sa"><button onclick="go(-1)">Back</button><button class="p" onclick="go(1)">Next step</button><button class="ls" onclick="readStep()">&#9654; Listen</button></div>`}-->
-<!--function go(k){const n=(window._steps||[]).length;si=Math.min(n-1,Math.max(0,si+k));stepDraw();readStep(true)}-->
-<!--function loadStatus(){fetch('/api/status').then(r=>r.json()).then(s=>{serpLeft=s.serp_left;slDraw()}).catch(()=>{})}-->
-<!--loadStatus();-->
-<!--function stopVoice(){if(player){player.pause();player=null}if(window.speechSynthesis)speechSynthesis.cancel()}-->
-<!--async function readStep(quiet=false){-->
-<!--  const t=(window._steps||[])[si];if(!t||(quiet&&!window._spoke))return;-->
-<!--  if(!quiet&&window._playing){stopVoice();window._playing=false;return}-->
-<!--  window._spoke=true;stopVoice();window._playing=true;-->
-<!--  try{-->
-<!--    if(!clips[t]){const r=await fetch('/api/speak',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t})});if(!r.ok)throw new Error('voice '+r.status);clips[t]=URL.createObjectURL(await r.blob())}-->
-<!--    player=new Audio(clips[t]);player.onended=player.onerror=()=>{window._playing=false;player=null};await player.play()-->
-<!--  }catch(err){-->
-<!--    console.warn('/api/speak failed, using browser voice:',err);window._playing=false;-->
-<!--    if(window.speechSynthesis){window._playing=true;const u=new SpeechSynthesisUtterance(t);u.onend=u.onerror=()=>{window._playing=false};speechSynthesis.speak(u)}}}-->
-<!--async function rate(n,v){const i=swaps[n],s=i.subs[0];-->
-<!--  try{await fetch('/api/rate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pair:i.name+' -> '+s.name,x:s.x,rating:v})});$('r'+n).innerHTML='<small>Thanks, saved. This teaches the scorer.</small>'}-->
-<!--  catch{$('r'+n).innerHTML='<small>Could not save the rating.</small>'}}-->
-<!--function save(){const a=ls.get('hc_saved',[]);a.unshift({t:(cur.recipe&&cur.recipe.title)||(cur.dish&&cur.dish.title)||'Recipe',d:cur});ls.set('hc_saved',a.slice(0,20));note('Saved on this device.')}-->
-<!--function savedDraw(){const a=ls.get('hc_saved',[]);a-->
-<!--  $('saved').innerHTML=a.length?a.map((x,i)=>`<div class="card"><b>${esc(x.t)}</b><span><button class="save" onclick="openSaved(${i})">Open</button> <button onclick="delSaved(${i})" class="muted">Remove</button></span></div>`).join(''):'<div class="empty"><div><h2>Nothing saved yet</h2>Save a recipe and it will wait for you here.</div></div>'}-->
-<!--function openSaved(i){cur=ls.get('hc_saved',[])[i].d;si=0;view(1);draw()}-->
-<!--function delSaved(i){const a=ls.get('hc_saved',[]);a.splice(i,1);ls.set('hc_saved',a);savedDraw()}-->
-<!--</script></body></html>-->
